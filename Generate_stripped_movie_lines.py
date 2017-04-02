@@ -8,4 +8,4 @@ with open( data_path + movie_lines_file, 'r') as source:
             split = line.split( split_string )
             line_id = split[0]
             line_text = split[-1]
-            target.write( line_id + split_string + line_text + "\n" )
+            target.write( line_id + split_string + line_text )
