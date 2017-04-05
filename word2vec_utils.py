@@ -3,14 +3,24 @@ import re
 import numpy as np
 
 word2vec_path = './GoogleNews-vectors-negative300.bin'
-unknown_vectors = {}
+mapped_words = { '!':'exclamation',
+                    '?':'question',   
+                    ',':'comma',
+                    '.':'period',
+                    ':':'colon',
+                    ';':'semicolon',
+                    "'":'`',
+                    '`em':'em',
+                  }
+
+unknown_words = {}
 
 def initialize():
     return gensim.models.KeyedVectors.load_word2vec_format(word2vec_path, binary=True)
 
 # input: trained model, one sentence (string)
 # output: a list of word2vec vectors for that sentence
-def vectorize(model, sentence):
+def vectorize(model, sentence, pad_length = -1):
     if model is None:
         print "Please initialize the model before vectorizing a sentence!"
         return []
@@ -20,17 +30,24 @@ def vectorize(model, sentence):
     vectorized_sentence = []
 
     for word in words:
+        if word == "":
+            continue
         if word in model:
             vectorized_sentence.append(model[word])
-        elif word in unknown_vectors:
-            vectorized_sentence.append(unknown_vectors[word])
+        elif word in mapped_words:
+            vectorized_sentence.append(model[mapped_words[word]])
         else:
             # Yoon Kim's unknown word handling, 2014
             # https://github.com/yoonkim/CNN_sentence/blob/master/process_data.py#L88
-            unknown_vectors[word] = np.random.uniform(-0.25,0.25,300)
-            vectorized_sentence.append(unknown_vectors[word])   
+            if word not in unkown_words:
+                unknown_words[word] = np.random.uniform(-0.25,0.25,300)
+            vectorized_sentence.append(unknown_words[word])   
 
-    return vectorized_sentence
+    if( pad_length > 0 ):
+        while( len( vectorized_sentence ) < pad_length ):
+            vectorized_sentence.append(np.zeros(300))
+            
+    return np.array(vectorized_sentence)
 
 #model = initialize()
 #print vectorize(model, "Hello, this is a test!")
