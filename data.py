@@ -30,7 +30,7 @@ EMOTE_DELIMITER = '@'
 '''
 def get_id2line():
     lines=open('data/stripped_movie_lines_results.txt', 'r' ).read().split('\n')
-    id2line = { 'blank' : " ".join( [ 1, 9, 1, EMOTE_DELIMITER, '' ] )  }
+    id2line = { 'blank' : " ".join( [ '1', '9', '1', EMOTE_DELIMITER, '' ] )  }
     for line in lines:
         _line = line.split(SPLIT_STRING)
         if len(_line) == 4:
