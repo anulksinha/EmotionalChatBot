@@ -3,8 +3,8 @@
 EN_WHITELIST = '0123456789abcdefghijklmnopqrstuvwxyz ' # space is included in whitelist
 EN_BLACKLIST = '!"#$%&\'()*+,-./:;<=>?@[\\]^_`{|}~\''
 
-min_sent_length = 2
-max_sent_length = 25
+min_sent_length = 6
+max_sent_length = 30
 
 UNK = 'unk'
 VOCAB_SIZE = 8000
@@ -21,18 +21,25 @@ from subprocess import call
 import pickle
 import word2vec_utils as w2v
 
+SPLIT_STRING = '+++$+++'
+EMOTE_DELIMITER = '@'
 
 ''' 
     1. Read from 'movie-lines.txt'
     2. Create a dictionary with ( key = line_id, value = text )
 '''
 def get_id2line():
-    lines=open('data/movie_lines.txt', 'r' ).read().split('\n')
+    lines=open('data/stripped_movie_lines_results.txt', 'r' ).read().split('\n')
     id2line = {}
     for line in lines:
-        _line = line.split(' +++$+++ ')
-        if len(_line) == 5:
-            id2line[_line[0]] = _line[4]
+        _line = line.split(SPLIT_STRING)
+        if len(_line) == 4:
+            ID = _line[0].strip()
+            text = _line[1].strip()
+            pos = _line[2]
+            neg = _line[3][1:] #[1:] gets rid of the negative sign
+            neu = str( 11 - int( pos ) - int(neg) )
+            id2line[ID] = " ".join( [ pos, neu, neg, EMOTE_DELIMITER, text ] ) 
     return id2line
 
 '''
@@ -288,7 +295,6 @@ def process_data():
     B_w2v  = np.array( [ w2v.vectorize( w2v_model, line, pad_length = max_sent_length ) for line in filtered_B  ] ) 
     #A2_w2v = np.array( [ w2v.vectorize( line, pad_length = max_sent_length ) for line in A2_lines ] ) 
                 
-    
     print('\n >> Save numpy arrays to disk')
     # save them
     np.save('idx_A1.npy', filtered_A1)
