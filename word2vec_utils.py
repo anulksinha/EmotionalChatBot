@@ -39,7 +39,7 @@ def vectorize(model, sentence, pad_length = -1):
         else:
             # Yoon Kim's unknown word handling, 2014
             # https://github.com/yoonkim/CNN_sentence/blob/master/process_data.py#L88
-            if word not in unkown_words:
+            if word not in unknown_words:
                 unknown_words[word] = np.random.uniform(-0.25,0.25,300)
             vectorized_sentence.append(unknown_words[word])   
 

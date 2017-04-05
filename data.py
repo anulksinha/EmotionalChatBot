@@ -30,7 +30,7 @@ EMOTE_DELIMITER = '@'
 '''
 def get_id2line():
     lines=open('data/stripped_movie_lines_results.txt', 'r' ).read().split('\n')
-    id2line = {}
+    id2line = { 'blank' : " ".join( [ 1, 9, 1, EMOTE_DELIMITER, '' ] )  }
     for line in lines:
         _line = line.split(SPLIT_STRING)
         if len(_line) == 4:
@@ -80,7 +80,7 @@ def gather_dataset(convs, id2line):
     for conv in convs:
         for i in range(len(conv)-1):
             if(conv[i] in id2line and conv[i+1] in id2line):
-                A1.append('')
+                A1.append(id2line['blank'])
                 B.append(id2line[conv[i]])
                 A2.append(id2line[conv[i+1]])
                 if i + 2 < len(conv):
