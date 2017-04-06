@@ -169,7 +169,6 @@ def filter_data(A1_seq, B_seq, A2_seq):
 
     return filtered_A1, filtered_B, filtered_A2
 
-
 '''
  read list of words, create index to word,
   word to index dictionaries
@@ -201,9 +200,9 @@ def filter_unk(A1_w2v,B_w2v, atokenized, w2idx):
         if unk_count_a == 0:
             filtered_A1.append(A1_line)
             filtered_B.append(B_line)
-            filtered_A2.append(A2_line)
+            filtered_A2.append(' '.join(A2_line))
                                       
-
+    filtered_A1, filtered_B, filtered_A2 = map( lambda x: np.array( x ), [ filtered_A1, filtered_B, filtered_A2 ] )
     # print the fraction of the original data, filtered
     filt_data_len = len(filtered_A2)
     filtered = int(filt_data_len*100/data_len)
@@ -285,21 +284,16 @@ def process_data():
     filtered_A1, filtered_B, filtered_A2 = filter_unk(A1_lines, B_lines, A2_tokenized, w2idx)
     print('\n Final dataset len : ' + str(len(filtered_A2)))
 
-    print('\n >> Zero Padding')
-    padded_A2 = zero_pad(filtered_A2, w2idx)
+    #print('\n >> Zero Padding')
+    #padded_A2 = zero_pad(filtered_A2, w2idx)
 
-    print('\n>> w2v A1 and B')
-    # convert list of [lines of text] into list of [list of words ]
-    w2v_model = w2v.initialize()
-    A1_w2v = np.array( [ w2v.vectorize( w2v_model, line, pad_length = max_sent_length ) for line in filtered_A1 ] ) 
-    B_w2v  = np.array( [ w2v.vectorize( w2v_model, line, pad_length = max_sent_length ) for line in filtered_B  ] ) 
-    #A2_w2v = np.array( [ w2v.vectorize( line, pad_length = max_sent_length ) for line in A2_lines ] ) 
+    
                 
     print('\n >> Save numpy arrays to disk')
     # save them
     np.save('idx_A1.npy', filtered_A1)
-    np.save('idx_B.npy', filtered_B )
-    np.save('idx_A2.npy', padded_A2 )
+    np.save('idx_B.npy',  filtered_B )
+    np.save('idx_A2.npy', filtered_A2)
 
     # let us now save the necessary dictionaries
     metadata = {
@@ -314,12 +308,12 @@ def process_data():
         pickle.dump(metadata, f)
 
     # count of unknowns
-    unk_count = (padded_A2 == 1).sum()
+    # unk_count = (padded_A2 == 1).sum()
     # count of words
-    word_count = (padded_A2 > 1).sum()
+    # word_count = (padded_A2 > 1).sum()
 
-    print('% unknown : {0}'.format(100 * (unk_count/word_count)))
-    print('Dataset count : ' + str(padded_A2.shape[0]))
+    # print('% unknown : {0}'.format(100 * (unk_count/word_count)))
+    print('Dataset count : ' + str(filtered_A2.shape[0]))
 
 
     print('>> gathered questions and answers.\n')

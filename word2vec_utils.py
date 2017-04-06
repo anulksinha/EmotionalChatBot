@@ -11,6 +11,7 @@ mapped_words = { '!':'exclamation',
                     ';':'semicolon',
                     "'":'`',
                     '`em':'em',
+                   '-':'hyphen',
                   }
 
 unknown_words = {}
@@ -45,7 +46,7 @@ def vectorize(model, sentence, pad_length = -1):
 
     if( pad_length > 0 ):
         while( len( vectorized_sentence ) < pad_length ):
-            vectorized_sentence.append(np.zeros(300))
+            vectorized_sentence.append(np.array([1] + [0]*299)) #Vector pointing entirely along first dimension
             
     return np.array(vectorized_sentence)
 
