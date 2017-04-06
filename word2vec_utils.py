@@ -23,8 +23,8 @@ def initialize():
 # output: a list of word2vec vectors for that sentence
 def vectorize(model, sentence, pad_length = -1):
     if model is None:
-        print "Please initialize the model before vectorizing a sentence!"
-        return []
+        print( "Please initialize the model before vectorizing a sentence!" )
+        return( [] )
 
     sentence = re.sub(r"([\w/'+$\s-]+|[^\w/'+$\s-])\s*", r" \1", sentence)
     words = str.split(sentence.strip(), " ")
@@ -48,7 +48,7 @@ def vectorize(model, sentence, pad_length = -1):
         while( len( vectorized_sentence ) < pad_length ):
             vectorized_sentence.append(np.array([1] + [0]*299)) #Vector pointing entirely along first dimension
             
-    return np.array(vectorized_sentence)
+    return( np.array(vectorized_sentence) )
 
 #model = initialize()
 #print vectorize(model, "Hello, this is a test!")
