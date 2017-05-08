@@ -114,7 +114,7 @@ def filter_data(A1_seq, B_seq, A2_seq):
     # print the fraction of the original data, filtered
     filt_data_len = len(filtered_A1)
     filtered = int(filt_data_len*100/data_len)
-    print( filt_data_len + " is how many pairs remain" )
+    print( filt_data_len, " is how many pairs remain" )
     print(str(filtered) + '% passed through from original data')
 
     return np.array(filtered_A1), np.array(filtered_B), np.array(filtered_A2)

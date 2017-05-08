@@ -138,9 +138,9 @@ def get_n_training_data(n,A1=None,B=None,A2=None,model=None):
         to get the ones stored on disk be sure to run data.py first 
     '''
     global w2v_model
-    if A1 == None:
+    if A1 is None:
         A1,B,A2 = data.load_data()
-    if model == None:
+    if model is None:
         model = w2v_model
     A1_train = []
     B_train = []
