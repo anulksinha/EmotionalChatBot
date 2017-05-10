@@ -15,7 +15,10 @@ unknown_path  = 'unknown_words_stored.pkl'
 
 def initialize():
     global w2v_model
-    w2v_model = gensim.models.KeyedVectors.load_word2vec_format(word2vec_path, binary=True)
+    try:
+        w2v_model
+    except:
+        w2v_model = Word2Vec.load('movie_trained_w2v_model')#gensim.models.KeyedVectors.load_word2vec_format(word2vec_path, binary=True)
     return( w2v_model ) 
 
 def get_unknown_vectors():
@@ -52,7 +55,7 @@ def unvectorize_word( word ):
         # Get w2v best word and similarity score
         word = word[:-1]
         word_sum_square = np.sum(word**2) # calculate once here to avoid multiple calculation
-        w2v_word,w2v_similarity = global_w2v_model.similar_by_vector( word, topn = 1 )[0]
+        w2v_word,w2v_similarity = w2v_model.similar_by_vector( word, topn = 1 )[0]
         #Very confident it is this word
         if w2v_similarity > 0.999:
             ret = w2v_word
@@ -123,7 +126,7 @@ def vectorize( sentence, pad_length = -1, model = None ):
         else:
             # Yoon Kim's unknown word handling, 2014
             # https://github.com/yoonkim/CNN_sentence/blob/master/process_data.py#L88
-            unknown_vectors[lower_word] = np.append(np.random.uniform(-0.25,0.25,300),0)
+            unknown_vectors[lower_word] = np.append(np.random.uniform(-0.25,0.25,EMBED_DIM-1),0)
             vectorized_sentence.append(unknown_vectors[lower_word])
             #should_save_unknown_vectors = True
             
@@ -133,7 +136,7 @@ def vectorize( sentence, pad_length = -1, model = None ):
       
     return np.array(vectorized_sentence)
 
-def get_n_training_data(n,A1=None,B=None,A2=None,model=None):
+def get_training_data(A1=None,B=None,A2=None,model=None):
     ''' gets embeded versions of data stored on disk or passed in as A1,B,A2
         to get the ones stored on disk be sure to run data.py first 
     '''
@@ -147,10 +150,10 @@ def get_n_training_data(n,A1=None,B=None,A2=None,model=None):
     A2_train = []
     i = 0
     reset_global_unknown_vectors()
-    while len(A1_train) < n and i < len(A1) - 1:
+    for i in range(len(A1)):
         A1_train.append( vectorize(A1[i],pad_length = MAX_SENT_LENGTH,model = model) )
         B_train.append( vectorize(B[i],pad_length = MAX_SENT_LENGTH,model = model ) )
-        A2_train.append( vectorize(A2[i],pad_length = MAX_SENT_LENGTH*2,model = model) )
+        A2_train.append( vectorize(A2[i],pad_length = MAX_SENT_LENGTH,model = model) )
     save_global_unknown_vectors()
     return np.array(A1_train),np.array(B_train),np.array(A2_train)
 
@@ -163,6 +166,8 @@ def save_global_unknown_vectors():
     save_unknown_vectors(unknown_vectors)
 
 def initialize_global_w2v_model():
-    global global_w2v_model
-    global_w2v_model = initialize()
+    try:
+        w2v_model
+    except:
+        initialize()
     

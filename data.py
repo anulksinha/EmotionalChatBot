@@ -97,7 +97,7 @@ def filter_data(A1_seq, B_seq, A2_seq):
         lengths = map( lambda x: len(x[i].split(' ')), [A1_seq, B_seq, A2_seq ] )
         if( lengths[0] <= MAX_SENT_LENGTH and
             lengths[1] <= MAX_SENT_LENGTH and
-            lengths[2] <= MAX_SENT_LENGTH * 2  and #A2 can be long because LSTM responds in double lenght sequence 
+            lengths[2] <= MAX_SENT_LENGTH and #A2 can be long because LSTM responds in double lenght sequence 
             #( lengths[0] >= min_sent_length or ( lengths[0] == 1 and A1_seq[i] == '' ) )and
             lengths[0] >= MIN_SENT_LENGTH and
             lengths[1] >= MIN_SENT_LENGTH and
@@ -106,7 +106,7 @@ def filter_data(A1_seq, B_seq, A2_seq):
             filtered_A1.append( A1_seq[i] )
             filtered_B.append(  B_seq[i]  )
             filtered_A2.append( A2_seq[i] )
-        elif j < 10:
+        elif j < 2:
             print( A1_seq[i], B_seq[i], A2_seq[i] )
             print( lengths )
             j+=1
@@ -210,6 +210,9 @@ def process_data():
     print(convs[121:125])
     print('>> gathered conversations.\n')
     A1, B, A2 = gather_dataset(convs,id2line)
+    
+    print('\n>>saving all lines')
+    np.save('All_Lines.npy',np.append(A1,np.append(B,A2)))
 
     # change to lower case (just for en)
     #A1, B, A2 = [ [ line.lower() for line in sentences ] for sentences in [A1, B, A2 ] ]
