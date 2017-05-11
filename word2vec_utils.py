@@ -18,7 +18,7 @@ def initialize():
     try:
         w2v_model
     except:
-        w2v_model = gensim.models.KeyedVectors.load_word2vec_format(word2vec_path, binary=True)#Word2Vec.load('movie_trained_w2v_model')#
+        w2v_model = Word2Vec.load('movie_trained_w2v_model')#gensim.models.KeyedVectors.load_word2vec_format(word2vec_path, binary=True)#
     return( w2v_model ) 
 
 def get_unknown_vectors():
