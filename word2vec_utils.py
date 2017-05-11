@@ -18,7 +18,7 @@ def initialize():
     try:
         w2v_model
     except:
-        w2v_model = Word2Vec.load('movie_trained_w2v_model')#gensim.models.KeyedVectors.load_word2vec_format(word2vec_path, binary=True)#
+        w2v_model = gensim.models.KeyedVectors.load_word2vec_format(word2vec_path, binary=True)#Word2Vec.load('movie_trained_w2v_model')#
     return( w2v_model ) 
 
 def get_unknown_vectors():
@@ -148,7 +148,7 @@ def one_hot_vectorize( sentence, pad_length = -1, word_freqs = None ):
     
     for word in words:
         try:
-            number = word_freqs.index(lower_word)
+            number = word_freqs.index(word)
             if number > VOCAB_SIZE:
                 number = UNK
         except:
