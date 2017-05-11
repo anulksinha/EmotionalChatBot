@@ -18,7 +18,7 @@ def initialize():
     try:
         w2v_model
     except:
-        w2v_model = Word2Vec.load('movie_trained_w2v_model')#gensim.models.KeyedVectors.load_word2vec_format(word2vec_path, binary=True)
+        w2v_model = Word2Vec.load('movie_trained_w2v_model')#gensim.models.KeyedVectors.load_word2vec_format(word2vec_path, binary=True)#
     return( w2v_model ) 
 
 def get_unknown_vectors():
@@ -136,6 +136,32 @@ def vectorize( sentence, pad_length = -1, model = None ):
       
     return np.array(vectorized_sentence)
 
+def one_hot_vectorize( sentence, pad_length = -1, word_freqs = None ):
+    if word_freqs is None:
+        print( 'Loaded word_frequencies data from disk' )
+        word_freqs = np.load('words_in_order_of_freq.npy')
+    
+    sentence = split_sentence( sentence )
+    words = sentence.split(" ")
+    vectorized_sentence = []
+    
+    for word in words:
+        lower_word = word.lower()
+        try:
+            number = word_freqs.tolist().index(lower_word)
+            if number > VOCAB_SIZE:
+                number = UNK
+        except:
+            number = UNK
+        vectorized_sentence.append( number )
+
+    if( pad_length != -1 ):
+        while( len(vectorized_sentence) < pad_length ):
+            vectorized_sentence.append(NULL)
+    
+    return np.array(vectorized_sentence)
+
+
 def get_training_data(A1=None,B=None,A2=None,model=None):
     ''' gets embeded versions of data stored on disk or passed in as A1,B,A2
         to get the ones stored on disk be sure to run data.py first 
@@ -154,6 +180,30 @@ def get_training_data(A1=None,B=None,A2=None,model=None):
         A1_train.append( vectorize(A1[i],pad_length = MAX_SENT_LENGTH,model = model) )
         B_train.append( vectorize(B[i],pad_length = MAX_SENT_LENGTH,model = model ) )
         A2_train.append( vectorize(A2[i],pad_length = MAX_SENT_LENGTH,model = model) )
+    save_global_unknown_vectors()
+    return np.array(A1_train),np.array(B_train),np.array(A2_train)
+
+def get_training_data_one_hot_out(A1=None,B=None,A2=None,model=None):
+    ''' gets embeded versions of data stored on disk or passed in as A1,B,A2
+        to get the ones stored on disk be sure to run data.py first 
+    '''
+    global w2v_model
+    if A1 is None:
+        A1,B,A2 = data.load_data()
+    if model is None:
+        model = w2v_model
+    A1_train = []
+    B_train = []
+    A2_train = []
+    i = 0
+    reset_global_unknown_vectors()
+    
+    word_freqs = np.load('words_in_order_of_freq.npy')
+
+    for i in range(len(A1)):
+        A1_train.append( vectorize(A1[i],pad_length = MAX_SENT_LENGTH,model = model) )
+        B_train.append( vectorize(B[i],pad_length = MAX_SENT_LENGTH,model = model ) )
+        A2_train.append( one_hot_vectorize(A2[i],pad_length = MAX_SENT_LENGTH,word_freqs = word_freqs) )
     save_global_unknown_vectors()
     return np.array(A1_train),np.array(B_train),np.array(A2_train)
 
