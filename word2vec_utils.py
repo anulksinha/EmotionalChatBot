@@ -141,14 +141,14 @@ def one_hot_vectorize( sentence, pad_length = -1, word_freqs = None ):
         print( 'Loaded word_frequencies data from disk' )
         word_freqs = np.load('words_in_order_of_freq.npy')
     
-    sentence = split_sentence( sentence )
+    word_freqs = word_freqs.tolist()
+    sentence = split_sentence( sentence ).lower()
     words = sentence.split(" ")
     vectorized_sentence = []
     
     for word in words:
-        lower_word = word.lower()
         try:
-            number = word_freqs.tolist().index(lower_word)
+            number = word_freqs.index(word)
             if number > VOCAB_SIZE:
                 number = UNK
         except:
@@ -159,8 +159,18 @@ def one_hot_vectorize( sentence, pad_length = -1, word_freqs = None ):
         while( len(vectorized_sentence) < pad_length ):
             vectorized_sentence.append(NULL)
     
-    return np.array(vectorized_sentence)
+    return np.array(vectorized_sentence).astype('int16')
 
+def one_hot_unvectorize( sentence, word_freqs = None ):
+    if word_freqs is None:
+        print( 'Loaded word_frequencies data from disk' )
+        word_freqs = np.load('words_in_order_of_freq.npy') 
+    
+    pred_words = []
+    for word_vec in sentence[0]:
+        pred_words.append( word_freqs[np.where(word_vec==max(word_vec))[0][0]] )
+        
+    print( " ".join(pred_words))
 
 def get_training_data(A1=None,B=None,A2=None,model=None):
     ''' gets embeded versions of data stored on disk or passed in as A1,B,A2
