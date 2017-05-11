@@ -165,11 +165,12 @@ def one_hot_unvectorize( sentence, word_freqs = None ):
     if word_freqs is None:
         print( 'Loaded word_frequencies data from disk' )
         word_freqs = np.load('words_in_order_of_freq.npy') 
-    
+        #print(word_freqs)
     pred_words = []
-    for word_vec in sentence[0]:
-        pred_words.append( word_freqs[np.where(word_vec==max(word_vec))[0][0]] )
-        
+    #for word_vec in sentence[0]:
+    #    pred_words.append( word_freqs[np.where(word_vec==max(word_vec))[0][0]] )
+    for i in range(30):
+        pred_words.append(word_freqs[sentence[0,i]].decode('utf-8'))
     print( " ".join(pred_words))
 
 def get_training_data(A1=None,B=None,A2=None,model=None):
