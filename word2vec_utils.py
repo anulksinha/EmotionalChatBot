@@ -167,7 +167,7 @@ def one_hot_unvectorize( sentence, word_freqs = None ):
         word_freqs = np.load('words_in_order_of_freq.npy') 
     
     pred_words = []
-    for word_vec in predict[0]:
+    for word_vec in sentence[0]:
         pred_words.append( word_freqs[np.where(word_vec==max(word_vec))[0][0]] )
         
     print( " ".join(pred_words))
