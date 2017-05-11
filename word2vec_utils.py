@@ -166,7 +166,11 @@ def one_hot_unvectorize( sentence, word_freqs = None ):
         print( 'Loaded word_frequencies data from disk' )
         word_freqs = np.load('words_in_order_of_freq.npy') 
     
-    
+    pred_words = []
+    for word_vec in predict[0]:
+        pred_words.append( word_freqs[np.where(word_vec==max(word_vec))[0][0]] )
+        
+    print( " ".join(pred_words))
 
 def get_training_data(A1=None,B=None,A2=None,model=None):
     ''' gets embeded versions of data stored on disk or passed in as A1,B,A2
